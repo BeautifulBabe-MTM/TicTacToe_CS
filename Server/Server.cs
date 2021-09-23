@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace TicTacToe
+namespace Server
 {
-    class Program
+    class Server
     {
         static void Main(string[] args)
         {
-
+            Console.WriteLine("Hello World!");
         }
     }
 }
