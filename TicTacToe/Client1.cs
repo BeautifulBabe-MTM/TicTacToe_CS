@@ -10,75 +10,56 @@ namespace Client
 {
     public class Client1
     {
-        public string ipAddr { get; set; }
-        public int port { get; set; }
-        public string posicion { get; set; }
-        public Socket socket { get; set; }
-        public IPEndPoint iPEndPoint { get; set; }
-
-        public Client1(string ipadres, int port, string posicion)
+        public string ipAddr;
+        public int port;
+        public string position;
+        public Socket socket;
+        public IPEndPoint iPEndPoint;
+        public Client1(string iP_Address, int port, string pos)
         {
-            this.ipAddr = ipadres;
+            this.ipAddr = iP_Address;
             this.port = port;
-            this.posicion = posicion;
             this.socket = socket;
+            this.position = pos;
         }
-
-        public void CreateSocet()
-        {
-            this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        }
-
         public void CreateIPEndPoint()
         {
-
             this.iPEndPoint = new IPEndPoint(IPAddress.Parse(this.ipAddr), this.port);
-
         }
-        public void SendposicionToServ(string pos)
+        public void SendPositionToServer(string pos)
         {
             this.socket.Send(Encoding.Unicode.GetBytes(pos.ToString()));
         }
-
+        public void SendFileToServer()
+        {
+            this.socket.Send(File.ReadAllBytes(this.position));
+        }
         public void GetAndSendSizeToServ()
         {
             string size = string.Empty;
-            size = File.ReadAllBytes(this.posicion).Count().ToString();
+            size = File.ReadAllBytes(this.position).Count().ToString();
             this.socket.Send(Encoding.Unicode.GetBytes(size));
-
         }
-
-        public void SendFileToServ()
+        public void CreateSocket()
         {
-            this.socket.Send(File.ReadAllBytes(this.posicion));
-
+            this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
-
-        public void Conect()
+        public void Connect()
         {
-
             this.CreateIPEndPoint();
-            this.CreateSocet();
-
+            this.CreateSocket();
         }
-
-        public string GetMSGFromServ()
+        public string GetMSG()
         {
-
-            int bytes = 0;
-
             byte[] data = new byte[250];
-
             StringBuilder stringBuilder = new StringBuilder();
-
+            int bytes = 0;
             do
             {
                 bytes = this.socket.Receive(data);
                 stringBuilder.Append(Encoding.Unicode.GetString(data, 0, bytes));
             } while (this.socket.Available > 0);
             return stringBuilder.ToString();
-
-
         }
 
     }
